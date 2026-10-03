@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070a0d">
+  <title>Nuestro jardín secreto</title>
+  <link rel="stylesheet" href="./css/estilos.css">
+</head>
+<body>
+  <main id="escena" aria-label="Jardín nocturno interactivo"></main>
+  <div class="vigneta" aria-hidden="true"></div>
+
+  <section id="inicio" class="inicio" aria-labelledby="titulo-inicio">
+    <div class="inicio-contenido">
+      <p class="sobretitulo"><span class="linea"></span> UN LUGAR PARA NOSOTROS</p>
+      <h1 id="titulo-inicio">Nuestro jardín <em>secreto</em></h1>
+      <p class="descripcion">
+        Hay lugares que se sienten especiales porque tú estás en ellos.
+        Esta noche sembré algunos recuerdos para ti.
+      </p>
+      <button id="empezar" class="boton-principal" type="button">
+        Entrar al jardín <span aria-hidden="true">↗</span>
+      </button>
+      <p class="pista-inicio">Un pequeño recorrido para descubrir, sin prisa.</p>
+    </div>
+    <div class="inicio-indice" aria-hidden="true">
+      <span>01</span><span class="indice-linea"></span><span>05</span>
+    </div>
+  </section>
+
+  <header class="barra">
+    <div class="marca">
+      <span class="marca-simbolo" aria-hidden="true">✧</span>
+      <span>Nuestro jardín <small>UN RINCÓN PARA RECORDAR</small></span>
+    </div>
+    <button id="reiniciar" class="boton-texto" type="button">
+      Volver al inicio <span aria-hidden="true">↗</span>
+    </button>
+  </header>
+
+  <div class="hud-inferior">
+    <p class="instruccion">ARRASTRA PARA EXPLORAR <span>·</span> TOCA LAS LUCES</p>
+    <div class="contador">
+      <span id="progreso" aria-live="polite">00 / 05</span>
+      <small>RECUERDOS</small>
+    </div>
+  </div>
+
+  <div id="aviso" class="aviso" role="status" hidden></div>
+
+  <aside id="tarjeta" class="tarjeta" aria-label="Recuerdo" hidden>
+    <button id="cerrar" class="cerrar" type="button" aria-label="Cerrar recuerdo">×</button>
+    <span id="tarjeta-etiqueta" class="tarjeta-etiqueta"></span>
+    <h2 id="tarjeta-titulo"></h2>
+    <div class="separador"></div>
+    <p id="tarjeta-texto"></p>
+    <span class="tarjeta-final" aria-hidden="true">✧ &nbsp; ✧ &nbsp; ✧</span>
+  </aside>
+
+    <section
+    id="pixelart-modal"
+    class="pixelart-modal"
+    aria-label="Juego para colorear pixel art"
+    hidden
+  >
+    <div class="pixelart-panel">
+      <button
+        id="pixelart-cerrar"
+        class="pixelart-cerrar"
+        type="button"
+        aria-label="Cerrar juego"
+      >
+        ×
+      </button>
+
+      <p class="pixelart-etiqueta">UN PEQUEÑO JUEGO</p>
+      <h2 id="pixelart-titulo">Una flor para ti</h2>
+      <p class="pixelart-instruccion">
+        Elige un color y pinta los espacios con el mismo número.
+      </p>
+
+      <div id="pixelart-paleta" class="pixelart-paleta"></div>
+
+      <canvas
+        id="pixelart-canvas"
+        aria-label="Dibujo pixel art para colorear"
+      ></canvas>
+
+      <div class="pixelart-pie">
+        <span id="pixelart-progreso">0 / 0 píxeles</span>
+        <button id="pixelart-reiniciar" type="button">
+          Reiniciar dibujo
+        </button>
+      </div>
+
+      <p id="pixelart-mensaje" class="pixelart-mensaje" hidden></p>
+    </div>
+  </section>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module" src="./assets/js/escena.js"></script>
+</body>
+</html>

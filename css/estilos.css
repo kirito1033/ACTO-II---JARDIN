@@ -564,3 +564,98 @@ h1 em {
     font-size: .66rem;
   }
 }
+
+.pixelart-galeria {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 26px;
+}
+
+.pixelart-opcion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 11px;
+  min-height: 148px;
+  padding: 16px 9px;
+  border: 1px solid rgba(218, 193, 151, .25);
+  background: rgba(245, 234, 211, .04);
+  color: var(--marfil);
+  cursor: pointer;
+  text-align: center;
+  transition: transform .2s ease, background .2s ease, border-color .2s ease;
+}
+
+.pixelart-opcion:hover {
+  border-color: var(--oro);
+  background: rgba(201, 166, 107, .12);
+  transform: translateY(-4px);
+}
+
+.pixelart-miniatura {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  border: 1px solid rgba(225, 198, 150, .42);
+  background: #e7dece;
+  color: #a55766;
+  font: 2rem Georgia, serif;
+}
+
+.pixelart-opcion:nth-child(3) .pixelart-miniatura {
+  color: #d4a84e;
+}
+
+.pixelart-opcion strong {
+  display: block;
+  color: var(--marfil);
+  font: 400 1rem Georgia, serif;
+  line-height: 1.2;
+}
+
+.pixelart-opcion small {
+  display: block;
+  margin-top: 6px;
+  color: #bdb4a4;
+  font-size: .62rem;
+  letter-spacing: .06em;
+}
+
+.pixelart-volver {
+  display: inline-block;
+  margin: 0 auto 17px;
+  padding: 0 0 6px;
+  border: 0;
+  border-bottom: 1px solid rgba(218, 193, 151, .42);
+  background: none;
+  color: var(--oro);
+  cursor: pointer;
+  font-size: .75rem;
+}
+
+@media (max-width: 650px) {
+  .pixelart-galeria {
+    gap: 7px;
+  }
+
+  .pixelart-opcion {
+    min-height: 126px;
+    padding: 12px 5px;
+  }
+
+  .pixelart-miniatura {
+    width: 45px;
+    height: 45px;
+    font-size: 1.55rem;
+  }
+
+  .pixelart-opcion strong {
+    font-size: .83rem;
+  }
+
+  .pixelart-opcion small {
+    font-size: .52rem;
+  }
+}

@@ -65,37 +65,47 @@
     hidden
   >
     <div class="pixelart-panel">
-      <button
-        id="pixelart-cerrar"
-        class="pixelart-cerrar"
-        type="button"
-        aria-label="Cerrar juego"
-      >
-        ×
+  <button
+    id="pixelart-cerrar"
+    class="pixelart-cerrar"
+    type="button"
+    aria-label="Cerrar juego"
+  >
+    ×
+  </button>
+
+  <p class="pixelart-etiqueta">EL CABALLETE DEL JARDÍN</p>
+  <h2 id="pixelart-titulo">Elige un dibujo</h2>
+  <p id="pixelart-instruccion" class="pixelart-instruccion">
+    Cada dibujo guarda un pequeño recuerdo para colorear.
+  </p>
+
+  <div id="pixelart-galeria-contenedor">
+    <div id="pixelart-galeria" class="pixelart-galeria"></div>
+  </div>
+
+  <div id="pixelart-juego" hidden>
+    <button id="pixelart-volver" class="pixelart-volver" type="button">
+      ← Elegir otro dibujo
+    </button>
+
+    <div id="pixelart-paleta" class="pixelart-paleta"></div>
+
+    <canvas
+      id="pixelart-canvas"
+      aria-label="Dibujo pixel art para colorear"
+    ></canvas>
+
+    <div class="pixelart-pie">
+      <span id="pixelart-progreso">0 / 0 píxeles</span>
+      <button id="pixelart-reiniciar" type="button">
+        Reiniciar dibujo
       </button>
-
-      <p class="pixelart-etiqueta">UN PEQUEÑO JUEGO</p>
-      <h2 id="pixelart-titulo">Una flor para ti</h2>
-      <p class="pixelart-instruccion">
-        Elige un color y pinta los espacios con el mismo número.
-      </p>
-
-      <div id="pixelart-paleta" class="pixelart-paleta"></div>
-
-      <canvas
-        id="pixelart-canvas"
-        aria-label="Dibujo pixel art para colorear"
-      ></canvas>
-
-      <div class="pixelart-pie">
-        <span id="pixelart-progreso">0 / 0 píxeles</span>
-        <button id="pixelart-reiniciar" type="button">
-          Reiniciar dibujo
-        </button>
-      </div>
-
-      <p id="pixelart-mensaje" class="pixelart-mensaje" hidden></p>
     </div>
+
+    <p id="pixelart-mensaje" class="pixelart-mensaje" hidden></p>
+  </div>
+</div>
   </section>
 
   <script type="importmap">

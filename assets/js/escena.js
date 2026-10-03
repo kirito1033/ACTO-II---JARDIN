@@ -4,6 +4,10 @@ import { PUNTOS, MENSAJE_FINAL } from './config.js';
 import { iniciarPixelArt, abrirPixelArt } from './pixelart.js';
 
 const movil = matchMedia('(max-width: 700px)').matches;
+const movimientoReducido = matchMedia(
+  '(prefers-reduced-motion: reduce)'
+).matches;
+
 const escena = new THREE.Scene();
 escena.background = new THREE.Color(0x080d0e);
 escena.fog = new THREE.FogExp2(0x0b1415, 0.032);
@@ -14,30 +18,47 @@ const camara = new THREE.PerspectiveCamera(
   0.1,
   100
 );
+
 const posicionInicial = new THREE.Vector3(
   movil ? 10.5 : 11.5,
   movil ? 6.5 : 6,
   movil ? 18.5 : 17
 );
+
 const objetivoInicial = new THREE.Vector3(0, 1.45, -1);
 camara.position.copy(posicionInicial);
 
 const render = new THREE.WebGLRenderer({
-  antialias: !movil,
-  powerPreference: 'high-performance'
+  antialias: false,
+  powerPreference: movil ? 'low-power' : 'high-performance'
 });
-render.setPixelRatio(Math.min(devicePixelRatio, movil ? 1.3 : 1.8));
-render.setSize(innerWidth, innerHeight);
+
+function ajustarResolucion() {
+  render.setPixelRatio(
+    Math.min(window.devicePixelRatio || 1, movil ? 1 : 1.5)
+  );
+  render.setSize(innerWidth, innerHeight);
+}
+
+ajustarResolucion();
+
 render.outputColorSpace = THREE.SRGBColorSpace;
 render.toneMapping = THREE.ACESFilmicToneMapping;
 render.toneMappingExposure = 1.35;
-render.shadowMap.enabled = true;
+render.shadowMap.enabled = !movil;
 render.shadowMap.type = THREE.PCFSoftShadowMap;
-document.getElementById('escena').appendChild(render.domElement);
+
+document.getElementById('escena').appendChild(
+  render.domElement
+);
 
 iniciarPixelArt();
 
-const controles = new OrbitControls(camara, render.domElement);
+const controles = new OrbitControls(
+  camara,
+  render.domElement
+);
+
 controles.enableDamping = true;
 controles.dampingFactor = 0.055;
 controles.target.copy(objetivoInicial);
@@ -51,17 +72,17 @@ controles.update();
 const ambiente = new THREE.HemisphereLight(
   0xa8bed1,
   0x122419,
-  1.12
+  movil ? 1.35 : 1.12
 );
 escena.add(ambiente);
 
-const luna = new THREE.DirectionalLight(0xb8cbe0, 2.55);
-luna.position.set(-10, 15, -8);
-luna.castShadow = true;
-luna.shadow.mapSize.set(
-  movil ? 1024 : 2048,
-  movil ? 1024 : 2048
+const luna = new THREE.DirectionalLight(
+  0xb8cbe0,
+  movil ? 2.3 : 2.55
 );
+luna.position.set(-10, 15, -8);
+luna.castShadow = !movil;
+luna.shadow.mapSize.set(1024, 1024);
 luna.shadow.camera.left = -19;
 luna.shadow.camera.right = 19;
 luna.shadow.camera.top = 19;
@@ -71,7 +92,12 @@ luna.shadow.camera.far = 50;
 luna.shadow.normalBias = 0.035;
 escena.add(luna);
 
-const luzFuente = new THREE.PointLight(0x9cbec7, 7, 10, 2);
+const luzFuente = new THREE.PointLight(
+  0x9cbec7,
+  movil ? 4 : 7,
+  10,
+  2
+);
 luzFuente.position.set(0, 2.15, -2.5);
 escena.add(luzFuente);
 
@@ -145,91 +171,155 @@ const material = {
   })
 };
 
-function texturaSuelo() {
+function crearTexturaSuelo() {
   const canvas = document.createElement('canvas');
-  canvas.width = canvas.height = 512;
+  canvas.width = canvas.height = movil ? 256 : 512;
+
   const ctx = canvas.getContext('2d');
+  const lado = canvas.width;
 
   ctx.fillStyle = '#718064';
-  ctx.fillRect(0, 0, 512, 512);
+  ctx.fillRect(0, 0, lado, lado);
 
-  let semilla = 27;
-  const azar = () =>
-    ((semilla =
-      (Math.imul(1664525, semilla) + 1013904223) >>> 0) /
-      4294967296);
+  let semillaTextura = 27;
+
+  const azarTextura = () =>
+    ((semillaTextura = (
+      Math.imul(1664525, semillaTextura) +
+      1013904223
+    ) >>> 0) / 4294967296);
 
   const colores = [
-    '#546f4b', '#3e6144', '#809066',
-    '#97866a', '#53674a', '#334e3b'
+    '#546f4b',
+    '#3e6144',
+    '#809066',
+    '#97866a',
+    '#53674a',
+    '#334e3b'
   ];
 
-  for (let i = 0; i < 25000; i++) {
-    ctx.fillStyle = colores[Math.floor(azar() * colores.length)];
+  const manchas = movil ? 7000 : 18000;
+
+  for (let i = 0; i < manchas; i++) {
+    ctx.fillStyle =
+      colores[Math.floor(azarTextura() * colores.length)];
+
     ctx.fillRect(
-      azar() * 512,
-      azar() * 512,
-      1 + azar() * 3,
-      1 + azar() * 4
+      azarTextura() * lado,
+      azarTextura() * lado,
+      1 + azarTextura() * 3,
+      1 + azarTextura() * 4
     );
   }
 
   const textura = new THREE.CanvasTexture(canvas);
   textura.colorSpace = THREE.SRGBColorSpace;
-  textura.wrapS = textura.wrapT = THREE.RepeatWrapping;
+  textura.wrapS = THREE.RepeatWrapping;
+  textura.wrapT = THREE.RepeatWrapping;
   textura.repeat.set(5, 5);
-  textura.anisotropy = Math.min(
-    8,
-    render.capabilities.getMaxAnisotropy()
-  );
+  textura.anisotropy = movil
+    ? 1
+    : Math.min(4, render.capabilities.getMaxAnisotropy());
+
   return textura;
 }
 
-material.cesped.map = texturaSuelo();
+material.cesped.map = crearTexturaSuelo();
 material.cesped.needsUpdate = true;
 
 let semilla = 92184;
-const azar = () =>
-  ((semilla =
-    (Math.imul(1664525, semilla) + 1013904223) >>> 0) /
-    4294967296);
 
-const esfera = new THREE.SphereGeometry(1, 10, 8);
+function azar() {
+  semilla = (
+    Math.imul(1664525, semilla) +
+    1013904223
+  ) >>> 0;
+
+  return semilla / 4294967296;
+}
+
+// Geometrías compartidas para evitar crear una nueva
+// caja y un nuevo cilindro cada vez.
+const esferaGeo = new THREE.SphereGeometry(
+  1,
+  movil ? 7 : 10,
+  movil ? 6 : 8
+);
+
+const cajaGeo = new THREE.BoxGeometry(1, 1, 1);
+
+const cilindrosGeo = new Map();
+
+function obtenerCilindro(
+  radioSuperior,
+  radioInferior,
+  alto,
+  lados
+) {
+  const clave = [
+    radioSuperior,
+    radioInferior,
+    alto,
+    lados
+  ].join(':');
+
+  if (!cilindrosGeo.has(clave)) {
+    cilindrosGeo.set(
+      clave,
+      new THREE.CylinderGeometry(
+        radioSuperior,
+        radioInferior,
+        alto,
+        lados
+      )
+    );
+  }
+
+  return cilindrosGeo.get(clave);
+}
 
 function bola(
-  x, y, z, ancho, alto, fondo, mat,
-  padre = escena, sombra = true
+  x, y, z,
+  ancho, alto, fondo,
+  mat,
+  padre = escena,
+  sombra = true
 ) {
-  const objeto = new THREE.Mesh(esfera, mat);
+  const objeto = new THREE.Mesh(esferaGeo, mat);
   objeto.position.set(x, y, z);
   objeto.scale.set(ancho, alto, fondo);
-  objeto.castShadow = sombra;
-  objeto.receiveShadow = true;
+  objeto.castShadow = !movil && sombra;
+  objeto.receiveShadow = !movil;
   padre.add(objeto);
   return objeto;
 }
 
 function caja(
-  x, y, z, ancho, alto, fondo, mat,
+  x, y, z,
+  ancho, alto, fondo,
+  mat,
   padre = escena
 ) {
-  const objeto = new THREE.Mesh(
-    new THREE.BoxGeometry(ancho, alto, fondo),
-    mat
-  );
+  const objeto = new THREE.Mesh(cajaGeo, mat);
   objeto.position.set(x, y, z);
-  objeto.castShadow = true;
-  objeto.receiveShadow = true;
+  objeto.scale.set(ancho, alto, fondo);
+  objeto.castShadow = !movil;
+  objeto.receiveShadow = !movil;
   padre.add(objeto);
   return objeto;
 }
 
 function cilindro(
-  x, y, z, radioSuperior, radioInferior,
-  alto, mat, padre = escena, lados = 12
+  x, y, z,
+  radioSuperior,
+  radioInferior,
+  alto,
+  mat,
+  padre = escena,
+  lados = 12
 ) {
   const objeto = new THREE.Mesh(
-    new THREE.CylinderGeometry(
+    obtenerCilindro(
       radioSuperior,
       radioInferior,
       alto,
@@ -237,27 +327,33 @@ function cilindro(
     ),
     mat
   );
+
   objeto.position.set(x, y, z);
-  objeto.castShadow = true;
-  objeto.receiveShadow = true;
+  objeto.castShadow = !movil;
+  objeto.receiveShadow = !movil;
   padre.add(objeto);
   return objeto;
 }
 
-// Suelo amplio: evita que parezca una maqueta circular flotante.
+// Suelo.
 const suelo = new THREE.Mesh(
   new THREE.PlaneGeometry(100, 100),
   material.cesped
 );
+
 suelo.rotation.x = -Math.PI / 2;
 suelo.position.y = -0.11;
-suelo.receiveShadow = true;
+suelo.receiveShadow = !movil;
 escena.add(suelo);
 
-// Camino de piedras con piezas separadas y bordes de grava.
+// Camino.
 const geometriaPiedra = new THREE.CylinderGeometry(
-  1, 1.08, 0.10, 7
+  1,
+  1.08,
+  0.10,
+  7
 );
+
 const tierraCamino = new THREE.Mesh(
   new THREE.PlaneGeometry(3.35, 17.4),
   material.grava
@@ -277,59 +373,82 @@ for (let i = 0; i < 15; i++) {
         ? material.piedraClara
         : material.piedraOscura
     );
+
     laja.position.set(
       x + (j - 1) * 0.49,
       -0.025,
       z + ((i + j) % 2) * 0.13
     );
+
     laja.scale.set(
       0.28 + ((i + j) % 3) * 0.06,
       1,
       0.38
     );
+
     laja.rotation.y = (i * 2 + j) * 0.4;
-    laja.castShadow = true;
-    laja.receiveShadow = true;
+    laja.castShadow = !movil;
+    laja.receiveShadow = !movil;
     escena.add(laja);
   }
 }
 
-// Arco lateral con vegetación.
+// Arco lateral.
 for (const x of [-9.2, -6.1]) {
-  cilindro(x, 1.65, 6.2, 0.11, 0.16, 3.3, material.madera);
+  cilindro(
+    x, 1.65, 6.2,
+    0.11, 0.16, 3.3,
+    material.madera
+  );
 
-  for (let j = 0; j < 9; j++) {
+  for (let j = 0; j < 7; j++) {
     bola(
       x + Math.sin(j * 2) * 0.23,
-      0.5 + j * 0.34,
+      0.5 + j * 0.43,
       6.2,
-      0.24, 0.14, 0.26,
-      j % 2 ? material.hojas : material.hojasClaras
+      0.24,
+      0.14,
+      0.26,
+      j % 2
+        ? material.hojas
+        : material.hojasClaras
     );
   }
 }
 
 const arco = new THREE.Mesh(
-  new THREE.TorusGeometry(1.58, 0.12, 9, 32, Math.PI),
+  new THREE.TorusGeometry(
+    1.58,
+    0.12,
+    9,
+    32,
+    Math.PI
+  ),
   material.madera
 );
 arco.position.set(-7.65, 3.28, 6.2);
-arco.castShadow = true;
+arco.castShadow = !movil;
 escena.add(arco);
 
-for (let i = 0; i < 19; i++) {
-  const angulo = Math.PI * i / 18;
+for (let i = 0; i < 15; i++) {
+  const angulo = Math.PI * i / 14;
+
   const hoja = bola(
     -7.65 + Math.cos(angulo) * 1.6,
     3.28 + Math.sin(angulo) * 1.6,
     6.2,
-    0.2, 0.13, 0.27,
-    i % 5 ? material.hojas : material.rosa
+    0.2,
+    0.13,
+    0.27,
+    i % 5
+      ? material.hojas
+      : material.rosa
   );
+
   hoja.rotation.z = angulo;
 }
 
-// Fuente central.
+// Fuente.
 const fuente = new THREE.Group();
 fuente.position.set(0, 0, -2.5);
 escena.add(fuente);
@@ -337,46 +456,65 @@ escena.add(fuente);
 cilindro(
   0, 0.30, 0,
   2.12, 2.24, 0.68,
-  material.piedra, fuente, 32
+  material.piedra,
+  fuente,
+  28
 );
+
 cilindro(
   0, 0.68, 0,
   1.84, 1.84, 0.09,
-  material.agua, fuente, 36
+  material.agua,
+  fuente,
+  30
 );
 
 const borde = new THREE.Mesh(
-  new THREE.TorusGeometry(1.99, 0.15, 10, 48),
+  new THREE.TorusGeometry(
+    1.99,
+    0.15,
+    8,
+    36
+  ),
   material.piedraClara
 );
 borde.rotation.x = Math.PI / 2;
 borde.position.y = 0.76;
-borde.castShadow = true;
+borde.castShadow = !movil;
 fuente.add(borde);
 
 cilindro(
   0, 1.04, 0,
   0.36, 0.53, 0.71,
-  material.piedra, fuente
+  material.piedra,
+  fuente
 );
 
-const plato = bola(
+bola(
   0, 1.5, 0,
   0.52, 0.15, 0.52,
-  material.piedraClara, fuente
+  material.piedraClara,
+  fuente
 );
-plato.castShadow = true;
 
 const chorro = bola(
   0, 1.96, 0,
   0.10, 0.46, 0.10,
-  material.agua, fuente, false
+  material.agua,
+  fuente,
+  false
 );
 
 const ondulaciones = [];
-for (let i = 0; i < 3; i++) {
+
+for (let i = 0; i < (movil ? 1 : 3); i++) {
   const aroAgua = new THREE.Mesh(
-    new THREE.TorusGeometry(0.42 + i * 0.37, 0.012, 4, 48),
+    new THREE.TorusGeometry(
+      0.42 + i * 0.37,
+      0.012,
+      4,
+      36
+    ),
     new THREE.MeshBasicMaterial({
       color: 0xa7d0d3,
       transparent: true,
@@ -384,13 +522,18 @@ for (let i = 0; i < 3; i++) {
       depthWrite: false
     })
   );
+
   aroAgua.rotation.x = Math.PI / 2;
-  aroAgua.position.set(0, 0.755 + i * 0.003, 0);
+  aroAgua.position.set(
+    0,
+    0.755 + i * 0.003,
+    0
+  );
   fuente.add(aroAgua);
   ondulaciones.push(aroAgua);
 }
 
-// Banco de tablones individuales.
+// Banco.
 const banco = new THREE.Group();
 banco.position.set(4.6, 0, 0.4);
 banco.rotation.y = -0.5;
@@ -400,16 +543,24 @@ for (let i = 0; i < 5; i++) {
   caja(
     0, 0.85, -0.34 + i * 0.17,
     2.5, 0.09, 0.14,
-    i % 2 ? material.madera : material.maderaClara,
+    i % 2
+      ? material.madera
+      : material.maderaClara,
     banco
   );
 }
 
 for (let i = 0; i < 5; i++) {
   caja(
-    0, 1.13 + i * 0.15, -0.38 - i * 0.025,
-    2.5, 0.11, 0.12,
-    i % 2 ? material.maderaClara : material.madera,
+    0,
+    1.13 + i * 0.15,
+    -0.38 - i * 0.025,
+    2.5,
+    0.11,
+    0.12,
+    i % 2
+      ? material.maderaClara
+      : material.madera,
     banco
   );
 }
@@ -418,16 +569,18 @@ for (const x of [-1.05, 1.05]) {
   caja(
     x, 0.43, -0.28,
     0.13, 0.83, 0.13,
-    material.madera, banco
+    material.madera,
+    banco
   );
   caja(
     x, 0.43, 0.27,
     0.13, 0.83, 0.13,
-    material.madera, banco
+    material.madera,
+    banco
   );
 }
 
-// Árbol y ramas.
+// Árbol principal.
 const arbol = new THREE.Group();
 arbol.position.set(7.1, 0, -4.8);
 escena.add(arbol);
@@ -435,11 +588,13 @@ escena.add(arbol);
 const tronco = cilindro(
   0, 1.92, 0,
   0.34, 0.58, 3.84,
-  material.madera, arbol, 9
+  material.madera,
+  arbol,
+  8
 );
 tronco.rotation.z = 0.08;
 
-for (let i = 0; i < (movil ? 25 : 42); i++) {
+for (let i = 0; i < (movil ? 14 : 30); i++) {
   const angulo = i * 2.399;
   const radio = 0.7 + azar() * 1.6;
 
@@ -450,27 +605,43 @@ for (let i = 0; i < (movil ? 25 : 42); i++) {
     0.58 + azar() * 0.39,
     0.42 + azar() * 0.32,
     0.62 + azar() * 0.4,
-    i % 3 ? material.hojas : material.hojasClaras,
+    i % 3
+      ? material.hojas
+      : material.hojasClaras,
     arbol,
-    !movil && i < 11
+    !movil && i < 8
   );
+
   hoja.rotation.z = azar() - 0.5;
 }
 
-// Flores pequeñas junto al camino y en el rosal.
-const petaloGeo = new THREE.SphereGeometry(1, 8, 6);
-const hojaGeo = new THREE.SphereGeometry(1, 7, 5);
+// Flores detalladas solo en el rosal cercano.
+const petaloGeo = new THREE.SphereGeometry(
+  1,
+  movil ? 6 : 8,
+  5
+);
+const hojaGeo = new THREE.SphereGeometry(1, 6, 5);
 const talloGeo = new THREE.CylinderGeometry(
-  0.018, 0.028, 0.45, 5
+  0.018,
+  0.028,
+  0.45,
+  5
 );
 
 function flor(x, z, mat, escala = 1) {
-  const tallo = new THREE.Mesh(talloGeo, material.hojas);
+  const tallo = new THREE.Mesh(
+    talloGeo,
+    material.hojas
+  );
   tallo.position.set(x, 0.19 * escala, z);
   tallo.scale.y = escala;
   escena.add(tallo);
 
-  const hoja = new THREE.Mesh(hojaGeo, material.hojasClaras);
+  const hoja = new THREE.Mesh(
+    hojaGeo,
+    material.hojasClaras
+  );
   hoja.position.set(
     x + 0.10 * escala,
     0.19 * escala,
@@ -486,12 +657,17 @@ function flor(x, z, mat, escala = 1) {
 
   for (let j = 0; j < 5; j++) {
     const angulo = j * Math.PI * 2 / 5;
-    const petalo = new THREE.Mesh(petaloGeo, mat);
+    const petalo = new THREE.Mesh(
+      petaloGeo,
+      mat
+    );
+
     petalo.position.set(
       x + Math.cos(angulo) * 0.12 * escala,
       0.44 * escala,
       z + Math.sin(angulo) * 0.12 * escala
     );
+
     petalo.scale.set(
       0.105 * escala,
       0.05 * escala,
@@ -502,7 +678,9 @@ function flor(x, z, mat, escala = 1) {
   }
 
   bola(
-    x, 0.46 * escala, z,
+    x,
+    0.46 * escala,
+    z,
     0.07 * escala,
     0.05 * escala,
     0.07 * escala,
@@ -512,67 +690,106 @@ function flor(x, z, mat, escala = 1) {
   );
 }
 
-for (let i = 0; i < (movil ? 85 : 160); i++) {
-  const angulo = azar() * Math.PI * 2;
-  const radio = 3.2 + azar() * 12;
-  const x = Math.cos(angulo) * radio;
-  const z = Math.sin(angulo) * radio;
-
-  if (
-    Math.hypot(x, z + 2.5) < 2.65 ||
-    (Math.abs(x) < 2 && z > -5 && z < 11)
-  ) {
-    continue;
-  }
-
-  if (azar() < 0.48) {
-    flor(
-      x,
-      z,
-      azar() < 0.5
-        ? material.rosa
-        : material.rosaClara,
-      0.65 + azar() * 0.65
-    );
-  } else {
-    bola(
-      x, 0.12, z,
-      0.2 + azar() * 0.25,
-      0.14 + azar() * 0.15,
-      0.21 + azar() * 0.23,
-      azar() < 0.5
-        ? material.hojas
-        : material.hojasClaras,
-      escena,
-      false
-    );
-  }
-}
-
-for (let i = 0; i < 27; i++) {
+for (let i = 0; i < (movil ? 12 : 22); i++) {
   const angulo = azar() * Math.PI * 2;
   const radio = azar() * 1.45;
+
   flor(
     -5.2 + Math.cos(angulo) * radio,
     -1.9 + Math.sin(angulo) * radio,
-    i % 3 ? material.rosa : material.rosaClara,
+    i % 3
+      ? material.rosa
+      : material.rosaClara,
     0.8 + azar() * 0.6
   );
 }
 
-// Hierba fina con InstancedMesh: más detalle sin miles de draw calls.
-const hierbaGeo = new THREE.ConeGeometry(0.035, 0.48, 3);
+// Flores distantes: una sola malla instanciada.
+const cantidadFloresFondo = movil ? 45 : 110;
+const florFondoGeo = new THREE.SphereGeometry(
+  1,
+  6,
+  5
+);
+const florFondoMat = new THREE.MeshStandardMaterial({
+  color: 0xffffff,
+  roughness: 0.9
+});
+
+const floresFondo = new THREE.InstancedMesh(
+  florFondoGeo,
+  florFondoMat,
+  cantidadFloresFondo
+);
+
+const dummyFlor = new THREE.Object3D();
+const colorFlor = new THREE.Color();
+
+for (let i = 0; i < cantidadFloresFondo; i++) {
+  let x;
+  let z;
+
+  do {
+    const angulo = azar() * Math.PI * 2;
+    const radio = 3.2 + azar() * 12;
+    x = Math.cos(angulo) * radio;
+    z = Math.sin(angulo) * radio;
+  } while (
+    Math.hypot(x, z + 2.5) < 2.65 ||
+    (Math.abs(x) < 2 && z > -5 && z < 11)
+  );
+
+  dummyFlor.position.set(x, 0.28, z);
+  dummyFlor.rotation.set(
+    0,
+    azar() * Math.PI * 2,
+    0
+  );
+
+  const escala = 0.08 + azar() * 0.07;
+  dummyFlor.scale.set(
+    escala,
+    escala * 0.7,
+    escala
+  );
+  dummyFlor.updateMatrix();
+
+  floresFondo.setMatrixAt(
+    i,
+    dummyFlor.matrix
+  );
+
+  colorFlor.set(
+    i % 3 === 0
+      ? 0xd59ba5
+      : 0xad5c74
+  );
+  floresFondo.setColorAt(i, colorFlor);
+}
+
+floresFondo.instanceMatrix.needsUpdate = true;
+floresFondo.computeBoundingSphere();
+escena.add(floresFondo);
+
+// Hierba instanciada.
+const hierbaGeo = new THREE.ConeGeometry(
+  0.035,
+  0.48,
+  3
+);
 const hierbaMat = new THREE.MeshStandardMaterial({
   color: 0x547147,
   roughness: 1,
   side: THREE.DoubleSide
 });
-const cantidadHierba = movil ? 1100 : 2700;
+
+const cantidadHierba = movil ? 450 : 1700;
 const hierba = new THREE.InstancedMesh(
   hierbaGeo,
   hierbaMat,
   cantidadHierba
 );
+
 const dummy = new THREE.Object3D();
 
 for (let i = 0; i < cantidadHierba; i++) {
@@ -587,9 +804,15 @@ for (let i = 0; i < cantidadHierba; i++) {
     azar() * Math.PI * 2,
     (azar() - 0.5) * 0.27
   );
+
   const escala = 0.5 + azar() * 0.7;
-  dummy.scale.set(escala, escala, escala);
+  dummy.scale.set(
+    escala,
+    escala,
+    escala
+  );
   dummy.updateMatrix();
+
   hierba.setMatrixAt(i, dummy.matrix);
   hierba.setColorAt(
     i,
@@ -605,7 +828,17 @@ hierba.instanceMatrix.needsUpdate = true;
 hierba.computeBoundingSphere();
 escena.add(hierba);
 
-// Árboles lejanos en varias capas para dar profundidad.
+// Árboles lejanos simplificados.
+const arbolesFondo = new THREE.MeshStandardMaterial({
+  color: 0x183529,
+  roughness: 1
+});
+
+const arbolesMedios = new THREE.MeshStandardMaterial({
+  color: 0x244934,
+  roughness: 1
+});
+
 function arbolLejano(x, z, escala, color) {
   const grupo = new THREE.Group();
   grupo.position.set(x, 0, z);
@@ -615,16 +848,24 @@ function arbolLejano(x, z, escala, color) {
   cilindro(
     0, 1.3, 0,
     0.15, 0.23, 2.6,
-    material.madera, grupo, 7
+    material.madera,
+    grupo,
+    6
   );
 
-  for (let i = 0; i < 6; i++) {
-    const angulo = i * Math.PI * 2 / 6;
+  const cantidadCopa = movil ? 3 : 5;
+
+  for (let i = 0; i < cantidadCopa; i++) {
+    const angulo =
+      i * Math.PI * 2 / cantidadCopa;
+
     bola(
       Math.cos(angulo) * 0.8,
       2.6 + (i % 2) * 0.35,
       Math.sin(angulo) * 0.65,
-      0.9, 0.85, 0.9,
+      0.9,
+      0.85,
+      0.9,
       color,
       grupo,
       false
@@ -632,27 +873,24 @@ function arbolLejano(x, z, escala, color) {
   }
 }
 
-const arbolesFondo = new THREE.MeshStandardMaterial({
-  color: 0x183529,
-  roughness: 1
-});
-const arbolesMedios = new THREE.MeshStandardMaterial({
-  color: 0x244934,
-  roughness: 1
-});
+const cantidadArboles = movil ? 8 : 16;
 
-for (let i = 0; i < (movil ? 18 : 26); i++) {
-  const angulo = i * Math.PI * 2 / (movil ? 18 : 26);
+for (let i = 0; i < cantidadArboles; i++) {
+  const angulo =
+    i * Math.PI * 2 / cantidadArboles;
   const radio = 16.5 + azar() * 7;
+
   arbolLejano(
     Math.cos(angulo) * radio,
     Math.sin(angulo) * radio,
     0.85 + azar() * 0.8,
-    i % 3 ? arbolesFondo : arbolesMedios
+    i % 3
+      ? arbolesFondo
+      : arbolesMedios
   );
 }
 
-// Faroles: luces cálidas controladas.
+// Faroles.
 const farolCristal = new THREE.MeshStandardMaterial({
   color: 0xffd7aa,
   emissive: 0xffa85d,
@@ -670,34 +908,53 @@ for (const [x, z] of [
     0.06, 0.09, 2.24,
     material.metal
   );
+
   caja(
     x, 2.39, z,
     0.42, 0.48, 0.42,
     farolCristal
   );
 
-  const luz = new THREE.PointLight(0xe9b47c, 11, 5.3, 2);
-  luz.position.set(x, 2.39, z);
-  escena.add(luz);
+  if (!movil || z > 0) {
+    const luz = new THREE.PointLight(
+      0xe9b47c,
+      movil ? 7 : 11,
+      5.3,
+      2
+    );
+
+    luz.position.set(x, 2.39, z);
+    escena.add(luz);
+  }
 }
 
-// Estrellas discretas y luciérnagas.
-const totalEstrellas = movil ? 160 : 290;
-const posiciones = new Float32Array(totalEstrellas * 3);
+// Estrellas.
+const totalEstrellas = movil ? 100 : 220;
+const posiciones = new Float32Array(
+  totalEstrellas * 3
+);
 
 for (let i = 0; i < totalEstrellas; i++) {
   const angulo = azar() * Math.PI * 2;
   const radio = 20 + azar() * 28;
-  posiciones[i * 3] = Math.cos(angulo) * radio;
-  posiciones[i * 3 + 1] = 10 + azar() * 25;
-  posiciones[i * 3 + 2] = Math.sin(angulo) * radio;
+
+  posiciones[i * 3] =
+    Math.cos(angulo) * radio;
+  posiciones[i * 3 + 1] =
+    10 + azar() * 25;
+  posiciones[i * 3 + 2] =
+    Math.sin(angulo) * radio;
 }
 
 const estrellasGeo = new THREE.BufferGeometry();
 estrellasGeo.setAttribute(
   'position',
-  new THREE.BufferAttribute(posiciones, 3)
+  new THREE.BufferAttribute(
+    posiciones,
+    3
+  )
 );
+
 escena.add(
   new THREE.Points(
     estrellasGeo,
@@ -711,12 +968,13 @@ escena.add(
   )
 );
 
+// Luciérnagas.
 const luciernagas = [];
 const luciernagaMat = new THREE.MeshBasicMaterial({
   color: 0xf0d6a5
 });
 
-for (let i = 0; i < (movil ? 13 : 25); i++) {
+for (let i = 0; i < (movil ? 8 : 18); i++) {
   const x = (azar() - 0.5) * 24;
   const z = (azar() - 0.5) * 24;
 
@@ -724,7 +982,9 @@ for (let i = 0; i < (movil ? 13 : 25); i++) {
     x,
     0.65 + azar() * 2.5,
     z,
-    0.045, 0.045, 0.045,
+    0.045,
+    0.045,
+    0.045,
     luciernagaMat,
     escena,
     false
@@ -737,17 +997,46 @@ for (let i = 0; i < (movil ? 13 : 25); i++) {
   });
 }
 
-// Marcadores pequeños; zona invisible amplia para tocar en móvil.
+// Marcadores de recuerdos.
 const clickables = [];
 const marcadores = [];
 
+const nucleoGeo = new THREE.SphereGeometry(
+  0.13,
+  10,
+  8
+);
+const haloGeo = new THREE.SphereGeometry(
+  0.34,
+  10,
+  8
+);
+const aroGeo = new THREE.TorusGeometry(
+  0.29,
+  0.012,
+  5,
+  24
+);
+const zonaGeo = new THREE.SphereGeometry(
+  0.9,
+  10,
+  8
+);
+const zonaMat = new THREE.MeshBasicMaterial({
+  visible: false
+});
+
 for (const dato of PUNTOS) {
+  // El caballete se abre mediante el propio objeto 3D,
+  // no mediante un marcador superpuesto.
+  if (dato.id === 'caballete') continue;
+
   const grupo = new THREE.Group();
   grupo.position.set(...dato.posicion);
   escena.add(grupo);
 
   const nucleo = new THREE.Mesh(
-    new THREE.SphereGeometry(0.13, 12, 10),
+    nucleoGeo,
     new THREE.MeshBasicMaterial({
       color: dato.color
     })
@@ -755,7 +1044,7 @@ for (const dato of PUNTOS) {
   grupo.add(nucleo);
 
   const halo = new THREE.Mesh(
-    new THREE.SphereGeometry(0.34, 12, 10),
+    haloGeo,
     new THREE.MeshBasicMaterial({
       color: dato.color,
       transparent: true,
@@ -766,7 +1055,7 @@ for (const dato of PUNTOS) {
   grupo.add(halo);
 
   const aro = new THREE.Mesh(
-    new THREE.TorusGeometry(0.29, 0.012, 5, 28),
+    aroGeo,
     new THREE.MeshBasicMaterial({
       color: dato.color,
       transparent: true,
@@ -776,10 +1065,8 @@ for (const dato of PUNTOS) {
   grupo.add(aro);
 
   const zona = new THREE.Mesh(
-    new THREE.SphereGeometry(0.9, 12, 10),
-    new THREE.MeshBasicMaterial({
-      visible: false
-    })
+    zonaGeo,
+    zonaMat
   );
   zona.userData.punto = dato;
   grupo.add(zona);
@@ -792,159 +1079,18 @@ for (const dato of PUNTOS) {
     altura: dato.posicion[1]
   });
 
-  const luz = new THREE.PointLight(dato.color, 5, 2.8, 2);
-  grupo.add(luz);
-}
-
-// Interfaz e interacciones.
-const inicio = document.getElementById('inicio');
-const tarjeta = document.getElementById('tarjeta');
-const descubiertos = new Set();
-const raycaster = new THREE.Raycaster();
-const puntero = new THREE.Vector2();
-
-let avisoTemporizador;
-let inicioPointer = null;
-
-function avisar(texto) {
-  const aviso = document.getElementById('aviso');
-  aviso.textContent = texto;
-  aviso.hidden = false;
-
-  clearTimeout(avisoTemporizador);
-  avisoTemporizador = setTimeout(() => {
-    aviso.hidden = true;
-  }, 6500);
-}
-
-function abrirRecuerdo(dato) {
-  document.getElementById('tarjeta-etiqueta').textContent =
-    dato.etiqueta;
-  document.getElementById('tarjeta-titulo').textContent =
-    dato.nombre;
-  document.getElementById('tarjeta-texto').textContent =
-    dato.texto;
-  tarjeta.hidden = false;
-
-  if (!descubiertos.has(dato.id)) {
-    descubiertos.add(dato.id);
-
-    const actual = String(descubiertos.size).padStart(2, '0');
-    const total = String(PUNTOS.length).padStart(2, '0');
-    document.getElementById('progreso').textContent =
-      `${actual} / ${total}`;
-
-    if (descubiertos.size === PUNTOS.length) {
-      avisar(MENSAJE_FINAL);
-    }
-  }
-}
-
-document.getElementById('empezar').addEventListener(
-  'click',
-  () => inicio.classList.add('oculto')
-);
-
-document.getElementById('reiniciar').addEventListener(
-  'click',
-  () => {
-    tarjeta.hidden = true;
-    inicio.classList.remove('oculto');
-    camara.position.copy(posicionInicial);
-    controles.target.copy(objetivoInicial);
-    controles.update();
-  }
-);
-
-document.getElementById('cerrar').addEventListener(
-  'click',
-  () => { tarjeta.hidden = true; }
-);
-
-document.addEventListener('keydown', (evento) => {
-  if (evento.key === 'Escape') tarjeta.hidden = true;
-});
-
-render.domElement.addEventListener('pointerdown', (evento) => {
-  inicioPointer = {
-    x: evento.clientX,
-    y: evento.clientY
-  };
-});
-
-render.domElement.addEventListener('pointerup', (evento) => {
-  if (!inicioPointer) return;
-
-  const distancia = Math.hypot(
-    evento.clientX - inicioPointer.x,
-    evento.clientY - inicioPointer.y
-  );
-  inicioPointer = null;
-  if (distancia > 12) return;
-
-  const rect = render.domElement.getBoundingClientRect();
-  puntero.set(
-    ((evento.clientX - rect.left) / rect.width) * 2 - 1,
-    -((evento.clientY - rect.top) / rect.height) * 2 + 1
-  );
-
-  raycaster.setFromCamera(puntero, camara);
-  const impactos = raycaster.intersectObjects(
-    clickables,
-    false
-  );
-
-  if (!impactos.length) return;
-
-  const objeto = impactos[0].object;
-
-  if (objeto.userData.tipo === 'pixelart') {
-    abrirPixelArt('flor');
-    return;
-  }
-
-  if (objeto.userData.punto) {
-    abrirRecuerdo(objeto.userData.punto);
-  }
-});
-
-addEventListener('resize', () => {
-  camara.aspect = innerWidth / innerHeight;
-  camara.updateProjectionMatrix();
-  render.setSize(innerWidth, innerHeight);
-  render.setPixelRatio(
-    Math.min(devicePixelRatio, movil ? 1.3 : 1.8)
-  );
-});
-
-function animar(ms) {
-  const t = ms * 0.001;
-
-  marcadores.forEach(({ grupo, halo, aro, altura }, i) => {
-    grupo.position.y =
-      altura + Math.sin(t * 1.3 + i) * 0.08;
-    halo.scale.setScalar(
-      1 + Math.sin(t * 1.8 + i) * 0.17
+  if (!movil) {
+    const luz = new THREE.PointLight(
+      dato.color,
+      5,
+      2.8,
+      2
     );
-    aro.rotation.z = t * 0.15;
-  });
-
-  luciernagas.forEach(({ objeto, altura, fase }) => {
-    objeto.position.y =
-      altura + Math.sin(t * 0.9 + fase) * 0.2;
-  });
-
-  ondulaciones.forEach((onda, i) => {
-    const pulso = 1 + Math.sin(t * 1.1 - i) * 0.035;
-    onda.scale.set(pulso, pulso, pulso);
-  });
-
-  chorro.scale.y = 1 + Math.sin(t * 1.6) * 0.1;
-  controles.update();
-  render.render(escena, camara);
+    grupo.add(luz);
+  }
 }
 
-// Caballete de pintura interactivo.
+// Caballete interactivo.
 const caballete = new THREE.Group();
 caballete.position.set(-2.9, 0, 1.1);
 caballete.rotation.y = 0.30;
@@ -960,7 +1106,6 @@ const lienzoMaterial = new THREE.MeshStandardMaterial({
   roughness: 0.96
 });
 
-// Patas delanteras y trasera.
 for (const x of [-0.72, 0.72]) {
   const pierna = caja(
     x, 1.05, 0.12,
@@ -968,7 +1113,10 @@ for (const x of [-0.72, 0.72]) {
     maderaCaballete,
     caballete
   );
-  pierna.rotation.z = x < 0 ? 0.22 : -0.22;
+
+  pierna.rotation.z = x < 0
+    ? 0.22
+    : -0.22;
 }
 
 const pataTrasera = caja(
@@ -979,21 +1127,41 @@ const pataTrasera = caja(
 );
 pataTrasera.rotation.x = -0.26;
 
-// Marco exterior.
-caja(-0.98, 2.36, 0, 0.12, 1.85, 0.12, maderaCaballete, caballete);
-caja(0.98, 2.36, 0, 0.12, 1.85, 0.12, maderaCaballete, caballete);
-caja(0, 3.27, 0, 2.1, 0.13, 0.13, maderaCaballete, caballete);
-caja(0, 1.45, 0, 2.38, 0.16, 0.20, maderaCaballete, caballete);
+caja(
+  -0.98, 2.36, 0,
+  0.12, 1.85, 0.12,
+  maderaCaballete,
+  caballete
+);
 
-// Lienzo.
-const lienzo = caja(
+caja(
+  0.98, 2.36, 0,
+  0.12, 1.85, 0.12,
+  maderaCaballete,
+  caballete
+);
+
+caja(
+  0, 3.27, 0,
+  2.1, 0.13, 0.13,
+  maderaCaballete,
+  caballete
+);
+
+caja(
+  0, 1.45, 0,
+  2.38, 0.16, 0.20,
+  maderaCaballete,
+  caballete
+);
+
+caja(
   0, 2.34, -0.02,
   1.78, 1.67, 0.055,
   lienzoMaterial,
   caballete
 );
 
-// Soporte superior.
 const soporte = caja(
   0, 3.75, 0.04,
   0.12, 1.15, 0.12,
@@ -1002,7 +1170,6 @@ const soporte = caja(
 );
 soporte.rotation.z = -0.05;
 
-// Repisa inferior.
 caja(
   0, 1.18, 0.16,
   2.35, 0.14, 0.28,
@@ -1010,19 +1177,20 @@ caja(
   caballete
 );
 
-// Paleta decorativa.
-const paleta = bola(
-  0.72, 1.46, 0.30,
-  0.34, 0.045, 0.24,
+const paletaMaterial =
   new THREE.MeshStandardMaterial({
     color: 0xb87a4b,
     roughness: 0.75
-  }),
+  });
+
+const paleta = bola(
+  0.72, 1.46, 0.30,
+  0.34, 0.045, 0.24,
+  paletaMaterial,
   caballete
 );
 paleta.rotation.z = -0.16;
 
-// Pincel decorativo sobre la repisa.
 const pincel = new THREE.Group();
 pincel.position.set(-0.45, 1.46, 0.31);
 pincel.rotation.z = -0.68;
@@ -1050,15 +1218,292 @@ const puntaPincel = bola(
 );
 puntaPincel.rotation.z = -0.18;
 
-// Zona invisible para interactuar.
 const zonaCaballete = new THREE.Mesh(
-  new THREE.BoxGeometry(2.45, 4.2, 0.85),
-  new THREE.MeshBasicMaterial({ visible: false })
+  cajaGeo,
+  new THREE.MeshBasicMaterial({
+    visible: false,
+    side: THREE.DoubleSide
+  })
 );
+
 zonaCaballete.position.set(0, 2.08, 0);
+zonaCaballete.scale.set(2.45, 4.2, 0.85);
 zonaCaballete.userData.tipo = 'pixelart';
 caballete.add(zonaCaballete);
 
-clickables.push(zonaCaballete);
+// Interfaz.
+const inicio = document.getElementById('inicio');
+const tarjeta = document.getElementById('tarjeta');
+const modalPixelArt = document.getElementById(
+  'pixelart-modal'
+);
+
+const descubiertos = new Set();
+const raycaster = new THREE.Raycaster();
+const puntero = new THREE.Vector2();
+
+let avisoTemporizador;
+let inicioPointer = null;
+
+function avisar(texto) {
+  const aviso = document.getElementById('aviso');
+  aviso.textContent = texto;
+  aviso.hidden = false;
+
+  clearTimeout(avisoTemporizador);
+
+  avisoTemporizador = setTimeout(() => {
+    aviso.hidden = true;
+  }, 6500);
+}
+
+function abrirRecuerdo(dato) {
+  document.getElementById(
+    'tarjeta-etiqueta'
+  ).textContent = dato.etiqueta;
+
+  document.getElementById(
+    'tarjeta-titulo'
+  ).textContent = dato.nombre;
+
+  document.getElementById(
+    'tarjeta-texto'
+  ).textContent = dato.texto;
+
+  tarjeta.hidden = false;
+
+  if (!descubiertos.has(dato.id)) {
+    descubiertos.add(dato.id);
+
+    const actual = String(
+      descubiertos.size
+    ).padStart(2, '0');
+
+    const total = String(
+      PUNTOS.length
+    ).padStart(2, '0');
+
+    document.getElementById(
+      'progreso'
+    ).textContent = `${actual} / ${total}`;
+
+    if (
+      descubiertos.size === PUNTOS.length
+    ) {
+      avisar(MENSAJE_FINAL);
+    }
+  }
+}
+
+document.getElementById('empezar').addEventListener(
+  'click',
+  () => inicio.classList.add('oculto')
+);
+
+document.getElementById('reiniciar').addEventListener(
+  'click',
+  () => {
+    tarjeta.hidden = true;
+    inicio.classList.remove('oculto');
+    camara.position.copy(posicionInicial);
+    controles.target.copy(objetivoInicial);
+    controles.update();
+  }
+);
+
+document.getElementById('cerrar').addEventListener(
+  'click',
+  () => {
+    tarjeta.hidden = true;
+  }
+);
+
+document.addEventListener('keydown', (evento) => {
+  if (evento.key === 'Escape') {
+    tarjeta.hidden = true;
+  }
+});
+
+render.domElement.addEventListener(
+  'pointerdown',
+  (evento) => {
+    inicioPointer = {
+      x: evento.clientX,
+      y: evento.clientY
+    };
+  }
+);
+
+render.domElement.addEventListener(
+  'pointerup',
+  (evento) => {
+    if (!inicioPointer) return;
+
+    const distancia = Math.hypot(
+      evento.clientX - inicioPointer.x,
+      evento.clientY - inicioPointer.y
+    );
+
+    inicioPointer = null;
+
+    if (distancia > 12) return;
+
+    const rect =
+      render.domElement.getBoundingClientRect();
+
+    puntero.set(
+      (
+        (evento.clientX - rect.left) /
+        rect.width
+      ) * 2 - 1,
+      -(
+        (evento.clientY - rect.top) /
+        rect.height
+      ) * 2 + 1
+    );
+
+    raycaster.setFromCamera(
+      puntero,
+      camara
+    );
+
+    // Se comprueba primero el caballete para que
+    // un marcador cercano no bloquee su interacción.
+    const impactoCaballete =
+      raycaster.intersectObject(
+        zonaCaballete,
+        false
+      );
+
+    if (impactoCaballete.length) {
+      abrirPixelArt('flor');
+      return;
+    }
+
+    const impactos =
+      raycaster.intersectObjects(
+        clickables,
+        false
+      );
+
+    if (
+      impactos.length &&
+      impactos[0].object.userData.punto
+    ) {
+      abrirRecuerdo(
+        impactos[0].object.userData.punto
+      );
+    }
+  }
+);
+
+addEventListener('resize', () => {
+  camara.aspect = innerWidth / innerHeight;
+  camara.updateProjectionMatrix();
+  ajustarResolucion();
+});
+
+let ultimoFotograma = 0;
+let necesitaDibujar = true;
+
+function animar(ms) {
+  if (document.hidden || !modalPixelArt.hidden) {
+    return;
+  }
+
+  // Limitamos el móvil a unos 30 fotogramas por segundo.
+  if (
+    movil &&
+    ms - ultimoFotograma < 1000 / 30
+  ) {
+    return;
+  }
+
+  ultimoFotograma = ms;
+
+  const t = ms * 0.001;
+
+  if (!movimientoReducido) {
+    marcadores.forEach(
+      ({ grupo, halo, aro, altura }, i) => {
+        grupo.position.y =
+          altura +
+          Math.sin(t * 1.3 + i) * 0.08;
+
+        halo.scale.setScalar(
+          1 +
+          Math.sin(t * 1.8 + i) * 0.17
+        );
+
+        aro.rotation.z = t * 0.15;
+      }
+    );
+
+    luciernagas.forEach(
+      ({ objeto, altura, fase }) => {
+        objeto.position.y =
+          altura +
+          Math.sin(t * 0.9 + fase) * 0.2;
+      }
+    );
+
+    ondulaciones.forEach(
+      (onda, i) => {
+        const pulso =
+          1 +
+          Math.sin(t * 1.1 - i) * 0.035;
+
+        onda.scale.set(
+          pulso,
+          pulso,
+          pulso
+        );
+      }
+    );
+
+    chorro.scale.y =
+      1 +
+      Math.sin(t * 1.6) * 0.1;
+  }
+
+  const camaraAnterior =
+    camara.position.clone();
+  const objetivoAnterior =
+    controles.target.clone();
+
+  controles.update();
+
+  const camaraCambio =
+    !camaraAnterior.equals(camara.position) ||
+    !objetivoAnterior.equals(
+      controles.target
+    );
+
+  if (
+    !movimientoReducido ||
+    necesitaDibujar ||
+    camaraCambio
+  ) {
+    render.render(escena, camara);
+    necesitaDibujar = false;
+  }
+}
+
+addEventListener('resize', () => {
+  necesitaDibujar = true;
+});
+
+document.addEventListener(
+  'visibilitychange',
+  () => {
+    necesitaDibujar = true;
+  }
+);
+
+document.getElementById(
+  'pixelart-cerrar'
+).addEventListener('click', () => {
+  necesitaDibujar = true;
+});
 
 render.setAnimationLoop(animar);

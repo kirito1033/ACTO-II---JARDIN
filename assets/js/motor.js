@@ -11,18 +11,18 @@ const movimientoReducido = matchMedia(
 ).matches;
 
 const CALIDAD = {
-  pixelRatio: movil ? 1.25 : 1.75,
-  fps: movil ? 30 : 60,
-  piedras: movil ? 13 : 18,
-  flores: movil ? 35 : 85,
-  arbolesFondo: movil ? 4 : 8,
-  mariposas: movil ? 8 : 18,
-  luciernagas: movil ? 18 : 48,
-  pastoDecorativo: movil ? 55 : 150,
-    arbustos: movil ? 16 : 38,
-    piedrasDecorativas: movil ? 18 : 46,
-    setas: movil ? 12 : 30,
-    floresSilvestres: movil ? 45 : 120
+  pixelRatio: 1.75,
+  fps: 60,
+  piedras: 18,
+  flores: 85,
+  arbolesFondo: 8,
+  mariposas: 18,
+  luciernagas: 48,
+  pastoDecorativo: 150,
+  arbustos: 38,
+  piedrasDecorativas: 46,
+  setas: 30,
+  floresSilvestres: 120
 };
 
 const escena = new THREE.Scene();

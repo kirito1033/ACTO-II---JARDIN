@@ -86,11 +86,7 @@ function animar(ms) {
     controles.update();
   }
 
-  if (
-    !movimientoReducido &&
-    !movil &&
-    moviendo
-  ) {
+  if (!movimientoReducido && moviendo){
     const t = ms * 0.001;
 
     marcadores.forEach(

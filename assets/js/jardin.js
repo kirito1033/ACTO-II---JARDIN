@@ -303,7 +303,7 @@ const tronco = cilindro(
 
 tronco.rotation.z = 0.07;
 
-for (let i = 0; i < (movil ? 5 : 8); i++) {
+for (let i = 0; i < 8; i++) {
   const angulo = i * 2.399;
 
   const copa = new THREE.Mesh(
@@ -393,7 +393,7 @@ flores.computeBoundingSphere();
 escena.add(flores);
 
 // Rosales cerca del marcador correspondiente.
-for (let i = 0; i < (movil ? 5 : 10); i++) {
+for (let i = 0; i < 10; i++) {
   const angulo = azar() * Math.PI * 2;
   const radio = azar() * 1.3;
 

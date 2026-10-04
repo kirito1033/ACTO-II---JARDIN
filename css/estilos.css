@@ -705,3 +705,21 @@ h1 em {
 .carta-wrapper:focus-visible,.cartas-cerrar:focus-visible,.cartas-reiniciar:focus-visible { outline: 3px solid #f5d587; outline-offset: 3px; }
 @media (max-width:650px) { .cartas-panel { padding: 28px 12px; } .cards-grid { grid-template-columns: repeat(auto-fill,minmax(58px,1fr)); gap: 8px; } .carta-wrapper.grande { width: min(300px,calc(100vw - 34px)); height: min(450px,calc(100dvh - 64px)); } .carta-wrapper.grande .card-back-text { font-size: clamp(1rem,4vw,1.22rem); } }
 @media (prefers-reduced-motion:reduce) { .carta-inner { transition-duration: .01ms; } }
+
+.barra-acciones {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+@media (max-width: 650px) {
+  .barra-acciones {
+    flex-direction: column;
+    align-items: end;
+    gap: 5px;
+  }
+
+  #pantalla-completa {
+    font-size: .62rem;
+  }
+}

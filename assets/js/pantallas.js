@@ -71,7 +71,7 @@ const paredes = [
 ];
 
 // ======================================================
-// PANEL DE CONTROL
+// ESTILOS DEL REPRODUCTOR
 // ======================================================
 
 const estilos = document.createElement('style');
@@ -97,8 +97,16 @@ estilos.textContent = `
   display: none;
 }
 
-#panel-videos h2 {
-  margin: 0 0 8px;
+#panel-videos .cabecera-musica {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+#panel-videos .cabecera-musica h2 {
+  margin: 0;
   font-size: 17px;
 }
 
@@ -134,6 +142,12 @@ estilos.textContent = `
   cursor: default;
 }
 
+#panel-videos #ocultar-reproductor {
+  flex-shrink: 0;
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
 #panel-videos label {
   display: flex;
   align-items: center;
@@ -148,6 +162,26 @@ estilos.textContent = `
   overflow-wrap: anywhere;
 }
 
+#mostrar-reproductor {
+  position: fixed;
+  left: 16px;
+  bottom: 68px;
+  z-index: 12;
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid #ffffff30;
+  border-radius: 24px;
+  background: #08121eee;
+  color: #f4eee6;
+  font: 14px/1.4 system-ui, sans-serif;
+  box-shadow: 0 8px 24px #0006;
+  cursor: pointer;
+}
+
+#mostrar-reproductor[hidden] {
+  display: none;
+}
+
 @media (max-width: 700px) {
   #panel-videos {
     bottom: 60px;
@@ -155,10 +189,18 @@ estilos.textContent = `
     max-height: 48dvh;
     overflow: auto;
   }
+
+  #mostrar-reproductor {
+    bottom: 60px;
+  }
 }
 `;
 
 document.head.append(estilos);
+
+// ======================================================
+// PANEL DE CONTROL
+// ======================================================
 
 const panel = document.createElement('section');
 
@@ -171,7 +213,17 @@ panel.setAttribute(
 );
 
 panel.innerHTML = `
-  <h2>Música del jardín</h2>
+  <div class="cabecera-musica">
+    <h2>Música del jardín</h2>
+
+    <button
+      id="ocultar-reproductor"
+      type="button"
+      aria-label="Ocultar controles de música"
+    >
+      Ocultar ⌄
+    </button>
+  </div>
 
   <p id="cancion-actual"></p>
   <p id="posicion-cancion"></p>
@@ -579,7 +631,8 @@ const pantallas = paredes.map(pared => {
   return pantalla;
 });
 
-// Ajusta solamente el video: la decoración mantiene su tamaño.
+// Ajusta solamente el video.
+// La decoración mantiene su tamaño.
 video.addEventListener('loadedmetadata', () => {
   const aspecto = video.videoWidth / video.videoHeight;
 
@@ -825,11 +878,46 @@ video.addEventListener('error', () => {
 });
 
 // ======================================================
-// VISIBILIDAD DEL PANEL
+// MOSTRAR / OCULTAR EL REPRODUCTOR
 // ======================================================
+
+// En celular empieza minimizado.
+// En computador empieza abierto.
+let reproductorOculto = window.matchMedia(
+  '(max-width: 700px)'
+).matches;
+
+// Botón compacto para volver a abrir los controles.
+const botonMostrar = document.createElement('button');
+
+botonMostrar.id = 'mostrar-reproductor';
+botonMostrar.type = 'button';
+botonMostrar.hidden = true;
+botonMostrar.textContent = '♫ Música';
+
+botonMostrar.setAttribute(
+  'aria-label',
+  'Mostrar controles de música'
+);
+
+botonMostrar.setAttribute(
+  'aria-controls',
+  'panel-videos'
+);
+
+botonMostrar.setAttribute(
+  'aria-expanded',
+  'false'
+);
+
+document.body.append(botonMostrar);
 
 function visibilidad() {
   const inicio = document.getElementById('inicio');
+
+  const enInicio = Boolean(
+    inicio && !inicio.classList.contains('oculto')
+  );
 
   const modalAbierto = [
     'pixelart-modal',
@@ -839,11 +927,36 @@ function visibilidad() {
     return elemento && !elemento.hidden;
   });
 
+  // No muestra controles sobre la bienvenida o los juegos.
+  const interfazBloqueada = enInicio || modalAbierto;
+
   panel.hidden =
-    Boolean(inicio && !inicio.classList.contains('oculto')) ||
-    modalAbierto;
+    interfazBloqueada || reproductorOculto;
+
+  botonMostrar.hidden =
+    interfazBloqueada || !reproductorOculto;
+
+  botonMostrar.setAttribute(
+    'aria-expanded',
+    String(!panel.hidden)
+  );
 }
 
+el('ocultar-reproductor').addEventListener('click', () => {
+  reproductorOculto = true;
+
+  visibilidad();
+  botonMostrar.focus();
+});
+
+botonMostrar.addEventListener('click', () => {
+  reproductorOculto = false;
+
+  visibilidad();
+  el('ocultar-reproductor').focus();
+});
+
+// Mantiene la integración con la bienvenida y los juegos.
 const observador = new MutationObserver(visibilidad);
 
 ['inicio', 'pixelart-modal', 'cartas-modal'].forEach(id => {

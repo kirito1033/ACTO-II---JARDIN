@@ -1042,3 +1042,4 @@ export const zonaSombreroMago = new THREE.Mesh(
 );
 zonaSombreroMago.position.set(0.35, 1.55, 0);
 sombreroMago.add(zonaSombreroMago);
+

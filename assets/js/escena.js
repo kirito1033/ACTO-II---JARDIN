@@ -1,5 +1,6 @@
 import { iniciarPixelArt } from './pixelart.js';
 
+
 import {
   escena,
   camara,
@@ -12,6 +13,7 @@ import {
 
 import { chorro, marcadores } from './jardin.js';
 import './interaccion.js';
+import './pantallas.js';
 import { actualizarAmbiente } from './ambiente.js';
 
 iniciarPixelArt();

@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { PUNTOS } from './config.js';
 import { escena, CALIDAD, movil } from './motor.js';
 import { materiales, cajaGeo, piedraGeo, arbolCopaGeo, azar, caja, bola, cilindro } from './materiales.js';
+import { agregarGatosAlBanco } from './gatos.js';
 
 // ======================================================
 // SUELO Y CAMINO
@@ -232,6 +233,7 @@ export const chorro = bola(
 // ======================================================
 
 const banco = new THREE.Group();
+
 banco.position.set(
   4.6,
   0,
@@ -239,7 +241,11 @@ banco.position.set(
 );
 
 banco.rotation.y = -0.5;
+
 escena.add(banco);
+
+// Dos gatos sentados sobre el asiento.
+agregarGatosAlBanco(banco);
 
 for (let i = 0; i < 3; i++) {
   caja(

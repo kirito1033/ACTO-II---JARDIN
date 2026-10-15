@@ -834,7 +834,7 @@ const zonaGeo = new THREE.SphereGeometry(
 );
 
 for (const dato of PUNTOS) {
-  if (dato.id === 'caballete') {
+  if (dato.id === 'caballete' || dato.id === 'pareja') {
     continue;
   }
 
@@ -1042,4 +1042,3 @@ export const zonaSombreroMago = new THREE.Mesh(
 );
 zonaSombreroMago.position.set(0.35, 1.55, 0);
 sombreroMago.add(zonaSombreroMago);
-

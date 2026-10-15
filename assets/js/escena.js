@@ -14,6 +14,7 @@ import {
 import { chorro, marcadores } from './jardin.js';
 import './interaccion.js';
 import './pantallas.js';
+import { actualizarPareja } from './pareja.js';
 import { actualizarAmbiente } from './ambiente.js';
 
 iniciarPixelArt();
@@ -223,6 +224,7 @@ function animar(ms) {
       Math.sin(t * 1.2) * 0.04;
   }
 
+  actualizarPareja(deltaSegundos);
   actualizarAmbiente(ms);
   render.render(escena, camara);
 }

@@ -1,4 +1,3 @@
-// Edita aquí los mensajes de cada rincón del jardín.
 export const PUNTOS = [
   {
     id: 'arco',
@@ -33,12 +32,12 @@ export const PUNTOS = [
     texto: 'Si pudiera pedir un deseo, sería seguir sumando días, risas y recuerdos contigo. Quiero verte cumplir tus sueños y acompañarte mientras construyes otros nuevos.'
   },
   {
-    id: 'arbol',
-    nombre: 'El árbol de recuerdos',
-    etiqueta: '05 / LO QUE GUARDARÍA',
-    color: 0xc7b69c,
-    posicion: [7.1, 2.55, -4.8],
-    texto: 'Hay instantes que pasan muy rápido, pero se quedan a vivir dentro de nosotros. Los momentos contigo son de esos que siempre quiero recordar.'
+    id: 'pareja',
+    nombre: 'Nuestro último baile',
+    etiqueta: '05 / SIEMPRE CONTIGO',
+    color: 0xf1b4c5,
+    posicion: [11.5, 1.8, -1],
+    texto: 'Si la vida fuera una canción, elegiría bailarla contigo. No importa cuántas vueltas demos ni cómo cambie el camino: mi lugar favorito siempre será a tu lado.'
   },
   {
   id: 'caballete',

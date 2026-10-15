@@ -52,6 +52,13 @@ function avisar(texto) {
 }
 
 function abrirRecuerdo(dato) {
+  if (dato.id === 'pareja') {
+    const pendientes = recuerdos.filter(p => p.id !== 'pareja' && !descubiertos.has(p.id));
+    if (pendientes.length) {
+      avisar(`La pareja guarda el último recuerdo. Encuentra primero los otros ${pendientes.length}.`);
+      return;
+    }
+  }
   document.getElementById(
     'tarjeta-etiqueta'
   ).textContent = dato.etiqueta;

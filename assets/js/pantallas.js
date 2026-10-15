@@ -8,32 +8,47 @@ import { escena } from './motor.js';
 // Las rutas se resuelven desde la ubicación de pantallas.js.
 const VIDEOS = [
   {
-    nombre: 'Lasso — No pares de bailar',
+    nombre: 'Mägo De Oz - Pensando en ti',
     ruta: './videos/lasso-no-pares-de-bailar.mp4'
   },
   {
-    nombre: 'Alex Ubago — Sin miedo a nada',
+    nombre: 'Mägo de Oz - Desde Mi Cielo',
     ruta: './videos/alex-ubago-sin-miedo-a-nada.mp4'
   },
   {
-    nombre: 'Andrés Cepeda — Un ratito',
+    nombre: 'Rata Blanca - Mujer Amante',
     ruta: './videos/Andrés-Cepeda-Un-Ratito.mp4'
   },
   {
-    nombre: 'Chayanne — Dejaría todo',
+    nombre: 'Santiago Cruz - 6 AM ',
     ruta: './videos/Chayanne-Dejaría-Todo.mp4'
   },
   {
-    nombre: 'Pablo Alborán — Por fin',
+    nombre: 'Maná - Amor Clandestino',
     ruta: './videos/pablo-alborán-por-fin.mp4'
   },
   {
-    nombre: 'Sin Bandera — Te vi venir',
+    nombre: 'Maná - Bendita Tu Luz',
     ruta: './videos/Sin-Bandera-Te-Vi-Venir.mp4'
   },
   {
-    nombre: 'New West — Those Eyes',
+    nombre: 'Macaco - Coincidir',
     ruta: './videos/New-West-Those-Eyes.mp4'
+  }
+  ,
+  {
+    nombre: 'Zoé - Labios Rotos',
+    ruta: './videos/Zoé-Labios-Rotos.mp4'
+  }
+  ,
+  {
+    nombre: 'Jósean Log - Beso',
+    ruta: './videos/JóseanLog-Beso.mp4'
+  }
+  ,
+  {
+    nombre: 'Esperón - Luma',
+    ruta: './videos/Esperón-Luma.mp4'
   }
 ];
 

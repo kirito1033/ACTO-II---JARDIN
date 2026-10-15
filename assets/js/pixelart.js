@@ -249,11 +249,158 @@ const obtenerCanvas = () => document.getElementById('pixelart-canvas');
 const obtenerContexto = () => obtenerCanvas().getContext('2d');
 const esMovil = () => matchMedia('(max-width: 650px)').matches;
 
+
+// Zoom y navegación del tablero, independientes del progreso.
+let vistaPixelArt = null;
+function reiniciarVistaPixelArt() { vistaPixelArt?.reiniciar(); }
+
+function instalarZoomPixelArt() {
+  const canvas = obtenerCanvas();
+  const ventana = document.createElement('div');
+  ventana.id = 'pixelart-viewport';
+  canvas.before(ventana);
+  ventana.append(canvas);
+  const barra = document.createElement('div');
+  barra.className = 'pixelart-zoom-controles';
+  barra.innerHTML = `
+    <button type="button" data-zoom="menos" aria-label="Alejar dibujo">−</button>
+    <output aria-label="Nivel de zoom">100%</output>
+    <button type="button" data-zoom="mas" aria-label="Acercar dibujo">+</button>
+    <button type="button" data-zoom="reset">Centrar</button>
+    <button type="button" data-zoom="mover" aria-pressed="false">✋ Mover</button>`;
+  ventana.before(barra);
+  const ayuda = document.createElement('p');
+  ayuda.className = 'pixelart-zoom-ayuda';
+  ayuda.textContent = 'Rueda: zoom · Dos dedos: zoom y mover · Mover: arrastrar sin pintar';
+  barra.after(ayuda);
+  const estilo = document.createElement('style');
+  estilo.textContent = `
+#pixelart-viewport{position:relative;width:min(100%,560px);aspect-ratio:1;margin:0 auto;overflow:hidden;box-sizing:border-box;border:7px solid #795843;background:#e9e1d2;touch-action:none;user-select:none}
+#pixelart-viewport #pixelart-canvas{position:absolute;left:0;top:0;width:100%;height:100%;max-width:none;margin:0;border:0;box-shadow:none;transform-origin:0 0;touch-action:none}
+.pixelart-zoom-controles{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;margin:14px 0 8px}
+.pixelart-zoom-controles button{min-height:40px;min-width:40px;padding:7px 10px;border:1px solid #dac19766;border-radius:8px;background:#1b2524;color:#f5eede;font:inherit;cursor:pointer}
+.pixelart-zoom-controles button[aria-pressed="true"]{background:#795843;border-color:#dac197}
+.pixelart-zoom-controles output{min-width:52px;text-align:center;color:#dac197}
+.pixelart-zoom-ayuda{text-align:center;font:12px/1.5 system-ui;color:#dac197;margin:0 0 12px}
+`;
+  document.head.append(estilo);
+  let escala = 1, x = 0, y = 0, mover = false, gestoMultiple = false;
+  const punteros = new Map();
+  const limitar = (v,a,b) => Math.min(b,Math.max(a,v));
+  function aplicar() {
+    x = limitar(x, ventana.clientWidth*(1-escala), 0);
+    y = limitar(y, ventana.clientHeight*(1-escala), 0);
+    canvas.style.transform = `translate(${x}px,${y}px) scale(${escala})`;
+    canvas.style.cursor = mover ? 'grab' : 'crosshair';
+    barra.querySelector('output').textContent = `${Math.round(escala*100)}%`;
+  }
+  function zoomEn(nueva, px, py) {
+    const anterior = escala;
+    escala = limitar(nueva,1,6);
+    x = px-(px-x)*escala/anterior;
+    y = py-(py-y)*escala/anterior;
+    aplicar();
+  }
+  function local(px,py) {
+    const rect = ventana.getBoundingClientRect();
+    return {x:px-rect.left-ventana.clientLeft,y:py-rect.top-ventana.clientTop};
+  }
+  function pintar(px,py) {
+    if (!abierto || !dibujoActual) return;
+    const celda = obtenerCelda(px,py);
+    colorear(celda.columna,celda.fila);
+  }
+  function reiniciar() {
+    for (const id of punteros.keys()) {
+      if (ventana.hasPointerCapture(id)) ventana.releasePointerCapture(id);
+    }
+    punteros.clear(); gestoMultiple=false; pintando=false;
+    escala=1; x=0; y=0; aplicar();
+  }
+  vistaPixelArt = {reiniciar};
+  barra.addEventListener('click', evento => {
+    const accion = evento.target.closest('button')?.dataset.zoom;
+    if (accion === 'reset') reiniciar();
+    if (accion === 'mas' || accion === 'menos') {
+      zoomEn(escala*(accion==='mas'?1.25:0.8),ventana.clientWidth/2,ventana.clientHeight/2);
+    }
+    if (accion === 'mover') {
+      mover=!mover;
+      const boton=barra.querySelector('[data-zoom="mover"]');
+      boton.setAttribute('aria-pressed',String(mover));
+      boton.textContent=mover?'✎ Pintar':'✋ Mover';
+      aplicar();
+    }
+  });
+  ventana.addEventListener('wheel',evento=>{
+    if (!abierto || !dibujoActual) return;
+    evento.preventDefault();
+    const punto=local(evento.clientX,evento.clientY);
+    const delta=evento.deltaY*(evento.deltaMode===1?16:evento.deltaMode===2?ventana.clientHeight:1);
+    zoomEn(escala*Math.exp(-delta*0.002),punto.x,punto.y);
+  },{passive:false});
+  ventana.addEventListener('contextmenu',evento=>evento.preventDefault());
+  ventana.addEventListener('pointerdown',evento=>{
+    if (!abierto || !dibujoActual) return;
+    evento.preventDefault();
+    ventana.setPointerCapture(evento.pointerId);
+    const desplazar=mover || evento.button===1 || evento.button===2 || evento.shiftKey;
+    punteros.set(evento.pointerId,{x:evento.clientX,y:evento.clientY,
+      inicioX:evento.clientX,inicioY:evento.clientY,desplazar,tipo:evento.pointerType});
+    if (punteros.size>1) {gestoMultiple=true;pintando=false;return;}
+    pintando=!desplazar;
+    // Un toque pinta al soltar para que el inicio de un pellizco no pinte.
+    if (pintando && evento.pointerType!=='touch') pintar(evento.clientX,evento.clientY);
+  });
+  ventana.addEventListener('pointermove',evento=>{
+    const previo=punteros.get(evento.pointerId);
+    if (!previo) return;
+    if (punteros.size>=2) {
+      const antes=[...punteros.values()].slice(0,2).map(p=>({x:p.x,y:p.y}));
+      previo.x=evento.clientX;previo.y=evento.clientY;
+      const despues=[...punteros.values()].slice(0,2);
+      const distancia=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+      const d=distancia(...antes);
+      const centroAntes=local((antes[0].x+antes[1].x)/2,(antes[0].y+antes[1].y)/2);
+      const centroDespues=local((despues[0].x+despues[1].x)/2,(despues[0].y+despues[1].y)/2);
+      const anterior=escala;
+      escala=limitar(escala*(d>0?distancia(...despues)/d:1),1,6);
+      x=centroDespues.x-(centroAntes.x-x)*escala/anterior;
+      y=centroDespues.y-(centroAntes.y-y)*escala/anterior;
+      aplicar();return;
+    }
+    const dx=evento.clientX-previo.x,dy=evento.clientY-previo.y;
+    previo.x=evento.clientX;previo.y=evento.clientY;
+    if (gestoMultiple) return;
+    if (previo.desplazar) {x+=dx;y+=dy;aplicar();}
+    else if (pintando && previo.tipo!=='touch') pintar(previo.x,previo.y);
+  });
+  function terminar(evento) {
+    const punto=punteros.get(evento.pointerId);
+    if (evento.type==='pointerup' && punto?.tipo==='touch' && !punto.desplazar && !gestoMultiple &&
+        Math.hypot(evento.clientX-punto.inicioX,evento.clientY-punto.inicioY)<12) {
+      pintar(evento.clientX,evento.clientY);
+    }
+    punteros.delete(evento.pointerId);
+    if (ventana.hasPointerCapture(evento.pointerId)) ventana.releasePointerCapture(evento.pointerId);
+    if (!punteros.size) {gestoMultiple=false;pintando=false;}
+  }
+  ventana.addEventListener('pointerup',terminar);
+  ventana.addEventListener('pointercancel',terminar);
+  ventana.addEventListener('lostpointercapture',evento=>{
+    punteros.delete(evento.pointerId);
+    if (!punteros.size) {gestoMultiple=false;pintando=false;}
+  });
+  new ResizeObserver(aplicar).observe(ventana);
+  aplicar();
+}
+
 function configurarTamanoCanvas() {
   const canvas = obtenerCanvas();
   const lado = esMovil() ? 420 : 560;
   canvas.width = lado;
   canvas.height = lado;
+  reiniciarVistaPixelArt();
 }
 
 function obtenerCelda(clientX, clientY) {
@@ -381,6 +528,7 @@ function cargarDibujo(id) {
 }
 
 function volverAGaleria() {
+  reiniciarVistaPixelArt();
   dibujoActual = null;
   colorSeleccionado = null;
   celdasColoreadas = new Set();
@@ -393,6 +541,7 @@ function volverAGaleria() {
 }
 
 function cerrar() {
+  reiniciarVistaPixelArt();
   abierto = false;
   pintando = false;
   obtenerModal().hidden = true;
@@ -400,20 +549,7 @@ function cerrar() {
 
 export function iniciarPixelArt() {
   const canvas = obtenerCanvas();
-  canvas.addEventListener('pointerdown', evento => {
-    if (!abierto || !dibujoActual) return;
-    pintando = true;
-    canvas.setPointerCapture(evento.pointerId);
-    const { columna, fila } = obtenerCelda(evento.clientX, evento.clientY);
-    colorear(columna, fila);
-  });
-  canvas.addEventListener('pointermove', evento => {
-    if (!pintando || !abierto || !dibujoActual) return;
-    const { columna, fila } = obtenerCelda(evento.clientX, evento.clientY);
-    colorear(columna, fila);
-  });
-  canvas.addEventListener('pointerup', () => { pintando = false; });
-  canvas.addEventListener('pointercancel', () => { pintando = false; });
+  instalarZoomPixelArt();
   document.getElementById('pixelart-cerrar').addEventListener('click', cerrar);
   document.getElementById('pixelart-reiniciar').addEventListener('click', reiniciarDibujo);
   document.getElementById('pixelart-volver').addEventListener('click', volverAGaleria);

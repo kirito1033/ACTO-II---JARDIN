@@ -205,6 +205,47 @@ estrella: {
     [null, "#000000", "#d4d4d4", "#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff", "#b1b1b1", "#b1b1b1", "#000000", "#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff", "#f37ba7", "#f37ba7", "#f37ba7", "#ffffff", "#ffffff", "#000000", null, null, null, null],
 ]
 },
+'Navidad': {
+  nombre: 'Navidad',
+  subtitulo: 'Un dibujo para colorear',
+  mensajeFinal: '¡Terminaste!',
+    pixeles : [
+    [null, null, null, null, null, null, null, null, null, null, null, null, null, null, "#fee761", "#fee761", "#fee761", "#fee761", null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null, null, null, null, null, null, null, "#fee761", "#fee761", "#fee761", "#fee761", null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null, null, null, null, null, null, null, "#fee761", "#fee761", "#fee761", "#fee761", null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null, null, null, null, null, null, null, "#fee761", "#fee761", "#fee761", "#fee761", null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null, null, null, null, null, "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", null, null, null, null, null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null, null, null, null, null, "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", null, null, null, null, null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null, null, null, "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", null, null, null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null, null, null, "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", null, null, null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null, "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#e43b44", "#e43b44", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null, "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#e43b44", "#e43b44", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null, null, null, "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", null, null, null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null, null, null, "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", null, null, null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null, "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#e43b44", "#e43b44", "#3e8948", "#3e8948", "#3e8948", "#3e8948", null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null, "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#e43b44", "#e43b44", "#3e8948", "#3e8948", "#3e8948", "#3e8948", null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", null, null, null, null, null, null],
+    [null, null, null, null, null, null, "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null, "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null, "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#e43b44", "#e43b44", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", null, null, null, null, null, null],
+    [null, null, null, null, null, null, "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#e43b44", "#e43b44", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", null, null, null, null, null, null],
+    [null, null, null, null, "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#e43b44", "#e43b44", "#3e8948", "#3e8948", "#3e8948", "#3e8948", null, null, null, null],
+    [null, null, null, null, "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#e43b44", "#e43b44", "#3e8948", "#3e8948", "#3e8948", "#3e8948", null, null, null, null],
+    [null, null, "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#e43b44", "#e43b44", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#e43b44", "#e43b44", "#3e8948", "#3e8948", "#3e8948", "#3e8948", null, null],
+    [null, null, "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#e43b44", "#e43b44", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#3e8948", "#e43b44", "#e43b44", "#3e8948", "#3e8948", "#3e8948", "#3e8948", null, null],
+    [null, null, null, null, null, null, null, null, null, null, null, null, null, null, "#733e39", "#733e39", "#733e39", "#733e39", null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null, null, null, null, null, null, null, "#733e39", "#733e39", "#733e39", "#733e39", null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null, null, null, null, null, null, null, "#733e39", "#733e39", "#733e39", "#733e39", null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null, null, null, null, null, null, null, "#733e39", "#733e39", "#733e39", "#733e39", null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+]
+},
+
+
 
 };
 

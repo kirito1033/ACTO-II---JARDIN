@@ -8,16 +8,16 @@ import { escena } from './motor.js';
 // Las rutas se resuelven desde la ubicación de pantallas.js.
 const VIDEOS = [
   {
+    nombre: 'Esperón - Eclipsis',
+    ruta: './videos/Andrés-Cepeda-Un-Ratito.mp4'
+  },
+  {
     nombre: 'Mägo De Oz - Pensando en ti',
     ruta: './videos/lasso-no-pares-de-bailar.mp4'
   },
   {
     nombre: 'Mägo de Oz - Desde Mi Cielo',
     ruta: './videos/alex-ubago-sin-miedo-a-nada.mp4'
-  },
-  {
-    nombre: 'Rata Blanca - Mujer Amante',
-    ruta: './videos/Andrés-Cepeda-Un-Ratito.mp4'
   },
   {
     nombre: 'Santiago Cruz - 6 AM ',

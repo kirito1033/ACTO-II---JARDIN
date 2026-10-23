@@ -3,7 +3,7 @@ const DIBUJOS = {
     nombre: 'Flor amarilla',
     subtitulo: 'Un color para cada pequeño detalle',
     mensajeFinal:
-      'Terminaste esta flor. Ahora también forma parte de nuestro jardín.',
+     "Si pudiera guardar la alegría de tenerte cerca, tendría la forma de esta flor.",
     columnas: 13,
     filas: 15,
     colores: {
@@ -32,8 +32,9 @@ const DIBUJOS = {
 
   corazon: {
   nombre: 'Corazón del jardín',
-  subtitulo: 'Un pequeño recuerdo hecho con colores',
-  mensajeFinal: 'Terminaste el corazón. Cada píxel guarda un poquito de este lugar.',
+  subtitulo: "Un pequeño recuerdo hecho con colores",
+   mensajeFinal:
+      "Píxel a píxel apareció este corazón; momento a momento, tú te volviste alguien muy especial para mí.",
   pixeles: [
     [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
@@ -58,7 +59,7 @@ estrella: {
     nombre: 'Estrella nocturna',
     subtitulo: 'Una luz pequeña para una noche especial',
     mensajeFinal:
-      'La estrella está completa. Que siempre encuentres luz incluso en las noches más oscuras.',
+      "Entre tantas luces, siempre hay una que buscamos primero. Para mí eres tú.",
     columnas: 13,
     filas: 13,
     colores: {
@@ -89,7 +90,8 @@ estrella: {
 'manzana': {
   nombre: 'manzana',
   subtitulo: 'Un dibujo para colorear',
-  mensajeFinal: '¡Terminaste!',
+   mensajeFinal:
+      "No necesito un día extraordinario para ser feliz contigo; los momentos pequeños contigo ya lo hacen especial.",
    pixeles : [
     [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
@@ -129,7 +131,8 @@ estrella: {
 'Asta': {
   nombre: 'Asta',
   subtitulo: 'Un dibujo para colorear',
-  mensajeFinal: '¡Terminaste!',
+  mensajeFinal:
+      "Cuando el camino se ponga difícil, quiero recordarte todo lo que eres capaz de lograr.",
    pixeles : [
     [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
@@ -169,7 +172,8 @@ estrella: {
 'polar': {
   nombre: 'polar',
   subtitulo: 'Un dibujo para colorear',
-  mensajeFinal: '¡Terminaste!',
+  mensajeFinal:
+      "Si el mundo se siente frío, ojalá encuentres en mí un lugar tranquilo donde descansar.",
     pixeles : [
     [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
     [null, null, "#f9d9e4", "#f9d9e4", "#f9d9e4", null, null, null, "#f9d9e4", null, null, null, "#f9d9e4", "#f9d9e4", "#f9d9e4", null, "#f9d9e4", null, null, null, "#f9d9e4", null, "#f9d9e4", "#f9d9e4", "#f9d9e4", null, null, null, "#f9d9e4", null, "#f9d9e4", null],
@@ -208,7 +212,8 @@ estrella: {
 'Navidad': {
   nombre: 'Navidad',
   subtitulo: 'Un dibujo para colorear',
-  mensajeFinal: '¡Terminaste!',
+  mensajeFinal:
+      "Entre luces, regalos y deseos, yo pediría algo sencillo: más momentos contigo.",
     pixeles : [
     [null, null, null, null, null, null, null, null, null, null, null, null, null, null, "#fee761", "#fee761", "#fee761", "#fee761", null, null, null, null, null, null, null, null, null, null, null, null, null, null],
     [null, null, null, null, null, null, null, null, null, null, null, null, null, null, "#fee761", "#fee761", "#fee761", "#fee761", null, null, null, null, null, null, null, null, null, null, null, null, null, null],
@@ -308,7 +313,7 @@ function instalarZoomPixelArt() {
     <output aria-label="Nivel de zoom">100%</output>
     <button type="button" data-zoom="mas" aria-label="Acercar dibujo">+</button>
     <button type="button" data-zoom="reset">Centrar</button>
-    <button type="button" data-zoom="mover" aria-pressed="false">✋ Mover</button>`;
+    <button type="button" data-zoom="mover" aria-pressed="false">Mover</button>`;
   ventana.before(barra);
   const ayuda = document.createElement('p');
   ayuda.className = 'pixelart-zoom-ayuda';
@@ -369,7 +374,7 @@ function instalarZoomPixelArt() {
       mover=!mover;
       const boton=barra.querySelector('[data-zoom="mover"]');
       boton.setAttribute('aria-pressed',String(mover));
-      boton.textContent=mover?'✎ Pintar':'✋ Mover';
+      boton.textContent=mover?'Pintar':'Mover';
       aplicar();
     }
   });

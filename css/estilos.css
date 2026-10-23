@@ -723,3 +723,186 @@ h1 em {
     font-size: .62rem;
   }
 }
+
+.pixelart-galeria {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+  gap: 14px;
+  margin-top: 26px;
+  text-align: left;
+}
+
+.pixelart-opcion {
+  position: relative;
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 13px;
+  row-gap: 4px;
+  align-items: center;
+  min-height: 116px;
+  padding: 16px;
+  border: 1px solid rgba(218, 193, 151, 0.25);
+  background: linear-gradient(145deg, rgba(245, 234, 211, 0.08), rgba(7, 12, 12, 0.15));
+  color: var(--marfil);
+  cursor: pointer;
+  text-align: left;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pixelart-opcion:hover,
+.pixelart-opcion:focus-visible {
+  transform: translateY(-4px);
+  border-color: var(--oro);
+  background: rgba(201, 166, 107, 0.12);
+  box-shadow: 0 13px 28px rgba(0, 0, 0, 0.2);
+  outline: none;
+}
+
+.pixelart-opcion:active {
+  transform: translateY(-1px);
+}
+
+.pixelart-numero {
+  position: absolute;
+  top: 9px;
+  right: 10px;
+  color: var(--oro);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+
+.pixelart-miniatura {
+  grid-row: 1 / span 2;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border: 1px solid rgba(225, 198, 150, 0.4);
+  background: #e9e0d0;
+  box-shadow: inset 0 0 0 4px rgba(255, 255, 255, 0.22);
+}
+
+.pixelart-miniatura-canvas {
+  width: 58px;
+  height: 58px;
+  image-rendering: pixelated;
+}
+
+.pixelart-opcion strong {
+  padding-right: 22px;
+  color: var(--marfil);
+  font: 400 1rem Georgia, serif;
+  line-height: 1.2;
+}
+
+.pixelart-opcion small {
+  color: #c6bbab;
+  font-size: 0.64rem;
+  letter-spacing: 0.045em;
+}
+
+.pixelart-mensaje {
+  border-top: 1px solid rgba(218, 193, 151, 0.35);
+  padding-top: 18px;
+  color: #f0d7a8;
+  font: italic 1.04rem/1.7 Georgia, serif;
+}
+
+.pixelart-pie {
+  border-top: 1px solid rgba(218, 193, 151, 0.22);
+  padding-top: 15px;
+}
+
+.color-pixel {
+  border-radius: 50%;
+  position: relative;
+}
+
+.color-pixel span {
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.pixelart-zoom-controles {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px 0 8px;
+}
+
+.pixelart-zoom-controles button {
+  min-height: 40px;
+  min-width: 40px;
+  padding: 7px 10px;
+  border: 1px solid rgba(218, 193, 151, 0.4);
+  border-radius: 8px;
+  background: #1b2524;
+  color: #f5eede;
+  font: inherit;
+  cursor: pointer;
+}
+
+.pixelart-zoom-controles button[aria-pressed="true"] {
+  background: #795843;
+  border-color: #dac197;
+}
+
+.pixelart-zoom-controles output {
+  min-width: 52px;
+  text-align: center;
+  color: #dac197;
+}
+
+.pixelart-zoom-ayuda {
+  text-align: center;
+  font: 12px/1.5 system-ui;
+  color: #dac197;
+  margin: 0 0 12px;
+}
+
+.pixelart-volver {
+  display: inline-block;
+  margin: 0 auto 17px;
+  padding: 0 0 6px;
+  border: 0;
+  border-bottom: 1px solid rgba(218, 193, 151, 0.42);
+  background: none;
+  color: var(--oro);
+  cursor: pointer;
+  font-size: 0.75rem;
+}
+
+@media (max-width: 650px) {
+  .pixelart-galeria {
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+  }
+
+  .pixelart-opcion {
+    grid-template-columns: 50px 1fr;
+    min-height: 95px;
+    padding: 12px;
+  }
+
+  .pixelart-miniatura {
+    width: 50px;
+    height: 50px;
+  }
+
+  .pixelart-miniatura-canvas {
+    width: 45px;
+    height: 45px;
+  }
+
+  .pixelart-opcion strong {
+    font-size: 0.88rem;
+  }
+
+  .pixelart-opcion small {
+    font-size: 0.56rem;
+  }
+}

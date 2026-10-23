@@ -1,6 +1,5 @@
 import { iniciarPixelArt } from './pixelart.js';
 
-
 import {
   escena,
   camara,

@@ -71,7 +71,7 @@ const MENSAJES = {
   },
 
   "JokerNegro": "Esta carta viene sin poderes especiales. Su único truco es darte una excusa para escribirme y decirme qué plan te gustaría que hiciéramos juntos.",
-  "JokerRojo": "Ya descubriste el secreto de esta baraja: detrás de cada carta hay una manera distinta de acercarme a ti. Esta la reservé para decirlo sin rodeos: me encantas."
+  "JokerRojo": "Ya descubriste el secreto de esta baraja: detrás de cada carta hay una manera distinta de acercarme a ti. Esta la reservé para decirlo sin rodeos: me encantas, TE AMO."
 };
 const CARTAS = PALOS.flatMap(palo => VALORES.map(valor => ({
   ...palo, valor, mensaje: MENSAJES[palo.nombre][valor]

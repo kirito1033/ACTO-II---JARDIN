@@ -8,7 +8,7 @@ import { escena } from './motor.js';
 // Las rutas se resuelven desde la ubicación de pantallas.js.
 const VIDEOS = [
   {
-    nombre: 'Esperón - Eclipsis',
+    nombre: 'Andrés Cepeda - Por El Resto De Mi Vida ',
     ruta: './videos/Andrés-Cepeda-Un-Ratito.mp4'
   },
   {
@@ -47,7 +47,7 @@ const VIDEOS = [
   }
   ,
   {
-    nombre: 'Esperón - Luma',
+    nombre: 'Andrés Cepeda - Embrujo',
     ruta: './videos/Esperón-Luma.mp4'
   }
 ];
